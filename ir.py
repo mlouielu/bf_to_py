@@ -48,7 +48,6 @@ def ir_to_py(ir):
              Inp: 'mem[p+%(offset)d] = ord(os.read(0, 1)[0]',
              Out: 'os.write(1, chr(mem[p+%(offset)d]))'}
     code = ''
-    code += 'from __future__ import print_function\n'
     code += 'import os\n'
     code += 'def main():\n'
     code += '    mem = [0] * 5000\n'

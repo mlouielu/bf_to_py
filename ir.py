@@ -49,9 +49,19 @@ def ir_to_py(ir):
              Out: 'os.write(1, chr(mem[p+%(offset)d]))'}
     code = ''
     code += 'import os\n'
-    code += 'def main():\n'
-    code += '    mem = [0] * 5000\n'
-    code += '    p = 0\n'
+    code += 'try:\n' + \
+            '    from rpython.rlib.jit import JitDriver\n' + \
+            'except ImportError:\n' + \
+            '    class JitDriver(object):\n' + \
+            '        def __init__(self, **kw): pass\n' + \
+            '        def jit_merge_point(self, **kw): pass\n' + \
+            '        def can_enter_jit(self, **kw): pass\n' + \
+            '    def elidable(f): return f\n' + \
+            'jitdriver = JitDriver(greens=["mem"], reds="auto")\n'
+    code += 'def bf():\n' + \
+            '    mem = [0] * 5000\n' + \
+            '    p = 0\n' + \
+            '    jitdriver.jit_merge_point(mem=mem)\n'
     depth = 1
     for op in ir:
         if str(op.__class__) == "<class 'ir.Cls'>":
@@ -66,7 +76,8 @@ def ir_to_py(ir):
             if str(op.__class__) == "<class 'ir.Opn'>":
                 depth += 1
         code += '\n'
-    code += 'def entry_point(argv):\n    main()\n    return 0\n\n'
+    code += 'def run():\n    bf()\n    print("")\n'
+    code += 'def entry_point(argv):\n    run()\n    return 0\n\n'
     code += 'def target(*args):\n    return entry_point, None\n\n'
     code += 'if __name__ == "__main__":\n    res = entry_point(sys.argv)\n' + \
             '    sys.exit(res)\n'

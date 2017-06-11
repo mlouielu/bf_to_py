@@ -159,10 +159,7 @@ def run(input_file):
 
     # optimize
     program = zero(program)
-    start = time.time()
     main_loop(program, bracket_map)
-    elapsed = time.time() - start
-    print(elapsed)
 
 def entry_point(argv):
     if len(argv) > 1:

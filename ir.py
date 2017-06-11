@@ -79,6 +79,6 @@ def ir_to_py(ir):
     code += 'def run():\n    bf()\n    print("")\n'
     code += 'def entry_point(argv):\n    run()\n    return 0\n\n'
     code += 'def target(*args):\n    return entry_point, None\n\n'
-    code += 'if __name__ == "__main__":\n    res = entry_point(sys.argv)\n' + \
+    code += 'if __name__ == "__main__":\n    import sys\n    res = entry_point(sys.argv)\n' + \
             '    sys.exit(res)\n'
     return code
